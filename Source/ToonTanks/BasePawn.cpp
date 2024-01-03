@@ -1,9 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "BasePawn.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "GameFramework/Actor.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values
@@ -22,7 +20,7 @@ ABasePawn::ABasePawn()
 	TurretMesh->SetupAttachment(BaseMesh);
 
 	ProjectileSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Spawn Point"));
-	ProjectileSpawnPoint->SetupAttachment(BaseMesh);
+	ProjectileSpawnPoint->SetupAttachment(TurretMesh);
 }
 
 // Called when the game starts or when spawned
@@ -55,13 +53,21 @@ void ABasePawn::Rotateurret(FVector LookAtTarget)
 
 void ABasePawn::Fire()
 {
-	FVector ProjecttileSpawnPointLocation = ProjectileSpawnPoint->GetComponentLocation();
-	DrawDebugSphere(
+	FVector Location = ProjectileSpawnPoint->GetComponentLocation();
+	FRotator Rotation = ProjectileSpawnPoint->GetComponentRotation();
+
+	GetWorld()->SpawnActor<AProjectile>(ProjectileClass, Location, Rotation);
+
+	//FString ActorName = GetActorNameOrLabel();
+	/*UE_LOG(LogTemp, Display, TEXT("Fire %s"), *ActorName);*/
+
+	/*DrawDebugSphere(
 	GetWorld(),
 		ProjecttileSpawnPointLocation,
 		25,
 		12,
 		FColor::Red,
 		false,
-		3);
+		3);*/
 }
+
