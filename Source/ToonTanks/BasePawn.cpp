@@ -43,6 +43,10 @@ void ABasePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
+void ABasePawn::HandleDestruction()
+{
+
+}
 
 void ABasePawn::Rotateurret(FVector LookAtTarget)
 {
@@ -53,10 +57,29 @@ void ABasePawn::Rotateurret(FVector LookAtTarget)
 
 void ABasePawn::Fire()
 {
+	if (!ensure(GetWorld())) { //check null GetWorld()
+		return;
+	}
+
 	FVector Location = ProjectileSpawnPoint->GetComponentLocation();
 	FRotator Rotation = ProjectileSpawnPoint->GetComponentRotation();
 
-	GetWorld()->SpawnActor<AProjectile>(ProjectileClass, Location, Rotation);
+	AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, Location, Rotation);
+	if (Projectile) { // check null SpawnActor
+		Projectile->SetOwner(this);
+	}
+
+
+	/*FVector Location = ProjectileSpawnPoint->GetComponentLocation();
+	FRotator Rotation = ProjectileSpawnPoint->GetComponentRotation();
+
+	auto Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, Location, Rotation);
+	Projectile->SetOwner(this);*/
+
+
+
+
+
 
 	//FString ActorName = GetActorNameOrLabel();
 	/*UE_LOG(LogTemp, Display, TEXT("Fire %s"), *ActorName);*/
