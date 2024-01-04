@@ -15,15 +15,18 @@ void AToonTanksGameMode::ActorDied(AActor*  DeadActor)
 		if (ToonTanksPlayerController)
 		{
 			ToonTanksPlayerController->SetPlayerEnabledState(false);
-			/*Tank->DisableInput(Tank->GetTankPlayerController());
-			Tank->GetTankPlayerController()->bShowMouseCursor = false;*/
 		}
-		
+		GameOver(false);
 	}
 	else if (ATower* DestroyedTower = Cast<ATower>(DeadActor))
 	{
 		DestroyedTower->HandleDestruction();
 		UE_LOG(LogTemp, Display, TEXT("Destroyed Tower: %s"), *DestroyedTower->GetName());
+		--TargetTowers;
+		if (TargetTowers == 0)
+		{
+			GameOver(true);
+		}
 	}
 	else
 	{
@@ -40,6 +43,8 @@ void AToonTanksGameMode::BeginPlay()
 
 void AToonTanksGameMode::HandleGameStart()
 {
+	TargetTowers = GetTargetTowerCount();
+
 	Tank = Cast<ATank>(UGameplayStatics::GetPlayerPawn(this, 0));
 	ToonTanksPlayerController = Cast<AToonTanksPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
 
@@ -62,7 +67,15 @@ void AToonTanksGameMode::HandleGameStart()
 	}
 }
 
-void AToonTanksGameMode::StartGame()
+int AToonTanksGameMode::GetTargetTowerCount()
 {
-
+	TArray<AActor*> Towers;
+	UGameplayStatics::GetAllActorsOfClass(this, ATower::StaticClass(), Towers );
+	return Towers.Num();
 }
+
+////KHONG DUOC KHAI TAI .CPP KHI DUNG UFUNCTION(BlueprintImplementableEvent)
+//void AToonTanksGameMode::StartGame()
+//{
+//	UE_LOG(LogTemp, Display, TEXT("C++ StartGame"));
+//}
